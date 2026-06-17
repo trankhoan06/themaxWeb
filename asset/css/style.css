@@ -1,11 +1,18 @@
 html {
     font-size: 0.694444444vw;
+    -webkit-font-smoothing: antialiased;
+    /* Khử răng cưa ở cấp độ pixel */
+    -moz-osx-font-smoothing: grayscale;
 }
 
 @media only screen and (min-width: 1920px) {
     html {
         font-size: 13.3333333333px;
     }
+}
+
+* {
+    box-sizing: border-box;
 }
 
 :root {
@@ -309,20 +316,26 @@ h2 {
 .hover_txt {
     overflow: hidden;
     position: relative;
-    height: 6.4rem;
-    width: 100%;
+    height: max-content;
+    ;
+    /* height: 6.4rem; */
+    width: max-content;
+    grid-template-columns: 1fr;
+    display: grid;
 
     span {
-        transition: all .5s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-        position: absolute;
+        transition: transform .5s cubic-bezier(0.785, 0.135, 0.15, 0.86), opacity .5s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+        grid-row: 1 / 2;
+        grid-column: 1 / 2;
     }
 
     .init {
-        top: 0;
+        /* top: 0; */
     }
 
     .active {
-        bottom: -100%;
+        transform: translateY(100%);
+        /* bottom: -100%; */
     }
 
     &:hover {
@@ -332,11 +345,13 @@ h2 {
         }
 
         .active {
-            bottom: 0;
+            /* bottom: 0; */
+            transform: translateY(0%);
         }
 
         .init {
-            top: -100%;
+            /* top: -100%; */
+            transform: translateY(-100%);
         }
     }
 }
@@ -596,7 +611,7 @@ h2 {
         left: 0;
         bottom: 0;
         background: url(../image/icon_triangle.svg) no-repeat;
-        background-position: bottom left;
+        background-position: right center;
         width: 2.2rem;
         height: 6.6rem;
     }
@@ -654,6 +669,7 @@ h2 {
     padding-block: 1.7rem;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 /* footer */
