@@ -63,6 +63,20 @@
     text-align: right;
 }
 
+.service_img {
+    width: 100%;
+    height: 100vh;
+    /* Adjust height as needed */
+}
+
+.service_img_content {
+    width: 100%;
+    height: 100%;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
 
 /* service_card */
 

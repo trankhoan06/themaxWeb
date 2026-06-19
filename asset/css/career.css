@@ -222,26 +222,6 @@
     color: #bebebe;
 }
 
-.about_cta_inner_content {
-    left: 28.8rem;
-    right: 17.6rem;
-    display: flex;
-    justify-content: space-between;
-    width: auto;
-    align-items: center;
-}
-
-.about_cta_inner_content_title {
-    width: 37.7rem;
-}
-
-.about_cta_inner_content_des {
-    width: 40rem;
-}
-
-.about_cta_inner_content_title_txt {
-    margin-bottom: 4rem;
-}
 
 /* Parallax Career Image */
 .career_img {
@@ -257,4 +237,20 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+}
+
+/*cta  */
+
+.about_cta_inner_content_title {
+    grid-column: 3/7;
+    margin-right: 2rem;
+}
+
+.about_cta_inner_content_des {
+    grid-column: 8/12;
+    margin-right: 2rem;
+}
+
+.about_cta_inner_content_title_txt {
+    margin-bottom: 4rem;
 }
