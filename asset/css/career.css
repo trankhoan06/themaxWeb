@@ -4,6 +4,17 @@
     padding-bottom: 8rem;
 }
 
+.service_hero_bg {
+    position: absolute;
+    width: 60.69%;
+    right: 0;
+    transform: translate(20%, -70%);
+    top: 0;
+    pointer-events: none;
+    z-index: -1;
+    filter: blur(15rem);
+}
+
 .service_hero_left {
     grid-column: 1/9;
     margin-right: -3.2rem;

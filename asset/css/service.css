@@ -1,7 +1,20 @@
 /* service_hero */
-.service_hero {
-    padding-top: 11.6rem;
+.service_hero .container {
+    padding-top: 20rem;
+    overflow: hidden;
+    position: relative;
     padding-bottom: 8rem;
+}
+
+.service_hero_bg {
+    position: absolute;
+    width: 60.69%;
+    right: 0;
+    transform: translate(20%, -70%);
+    top: 0;
+    pointer-events: none;
+    z-index: -1;
+    filter: blur(15rem);
 }
 
 .service_hero_left {

@@ -3,6 +3,17 @@
     padding-block: 20rem 10rem;
 }
 
+.careerdetail_info_bg {
+    position: absolute;
+    width: 60.69%;
+    right: 0;
+    transform: translate(20%, -70%);
+    top: 0;
+    pointer-events: none;
+    z-index: -1;
+    filter: blur(15rem);
+}
+
 .careerdetail_info_content {
     grid-column: 1/9;
 }

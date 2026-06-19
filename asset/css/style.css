@@ -24,6 +24,10 @@ html {
     box-sizing: border-box;
 }
 
+.txt_normal {
+    font-weight: 400;
+}
+
 :root {
     --padding-container: 6.5rem;
 }
