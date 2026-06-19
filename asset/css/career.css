@@ -1,6 +1,6 @@
 /* service_hero */
 .service_hero {
-    padding-top: 11.6rem;
+    padding-top: 20rem;
     padding-bottom: 8rem;
 }
 
@@ -53,6 +53,14 @@
 
 .service_hero_right_txt {
     text-align: right;
+}
+
+.service_hero_right_discover path {
+    transition: stroke .6s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+
+.service_hero_right_discover:hover path {
+    stroke: #F32B3B;
 }
 
 
@@ -170,6 +178,14 @@
     }
 }
 
+.career_why_list_item path {
+    transition: stroke .6s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+
+.career_why_list_item:hover path {
+    stroke: #F32B3B;
+}
+
 .career_why_list_item_position {
     grid-column: 1/6;
 }
@@ -225,4 +241,20 @@
 
 .about_cta_inner_content_title_txt {
     margin-bottom: 4rem;
+}
+
+/* Parallax Career Image */
+.career_img {
+    width: 100%;
+    height: 100vh;
+    /* Adjust height as needed */
+}
+
+.career_img_inner {
+    width: 100%;
+    height: 100%;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }

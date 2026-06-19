@@ -265,6 +265,14 @@
     }
 }
 
+.home_case_content_item .home_case_content_item_txt_icon_wrap path {
+    transition: stroke .6s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+
+.home_case_content_item:hover .home_case_content_item_txt_icon_wrap path {
+    stroke: #F32B3B;
+}
+
 .home_case_content_item_img {
     position: absolute;
     opacity: 0;
@@ -395,4 +403,5 @@
     transform: translateX(-50%);
     top: 0;
     pointer-events: none;
+    z-index: -1;
 }

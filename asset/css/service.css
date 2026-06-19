@@ -51,6 +51,14 @@
     transform: translate(0%, 0%);
 }
 
+.service_hero_right_discover path {
+    transition: stroke .6s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+
+.service_hero_right_discover:hover path {
+    stroke: #F32B3B;
+}
+
 .service_hero_right_txt {
     text-align: right;
 }
