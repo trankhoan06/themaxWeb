@@ -272,7 +272,6 @@
 .home_intro_txt {
     display: block;
     will-change: transform;
-    width: max-content;
 }
 
 .home_intro_line:nth-child(2) {
@@ -453,7 +452,7 @@
 /* home_case */
 
 .home_case_subtitle {
-    width: 11.1rem;
+    width: max-content;
     margin-inline: auto;
     margin-bottom: 3.2rem;
 }
@@ -546,6 +545,7 @@
 }
 
 .home_case_content_item:hover {
+
     .home_case_content_item_txt_icon_wrap {
         transform: translate(100%, -100%);
     }
@@ -572,13 +572,14 @@
     position: absolute;
     opacity: 0;
     right: 12rem;
+    width: 30rem;
     top: 50%;
     transform: translateY(-50%);
     clip-path: inset(50% 0 50% 0);
     transition: opacity .6s cubic-bezier(0.785, 0.135, 0.15, 0.86),
         clip-path .6s cubic-bezier(0.785, 0.135, 0.15, 0.86);
     pointer-events: none;
-    z-index: 2;
+    z-index: 11;
 }
 
 .home_case_content_list {

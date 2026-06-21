@@ -166,3 +166,103 @@ SectionName: class extends TriggerSetup {
   }
 }
 ```
+
+---
+
+## 3. Standard Animation Utilities & Orchestration
+
+To maintain a clean, consistent, and highly optimized animation flow, the codebase provides standard utility classes. Always use these utilities instead of creating manual ad-hoc GSAP tweens.
+
+### 1. `FadeSplitText` (Text Splitting)
+- **Purpose**: Splitting text into lines, words, or characters, fading and sliding them into view.
+- **Features**: Automatically handles parent/child nested masking to avoid page layout shifts, sets correct `overflow: hidden` containers, and aligns gradient background titles (`.cl_linear`) to prevent visual snapping upon reversion.
+- **Parameters**:
+  - `el`: Target DOM element.
+  - `splitType`: `'lines'`, `'words'`, or `'chars'`.
+  - `isDisableAnim`: Optional boolean. If `true`, splits the text but defers immediate playback (useful for loop elements).
+  - `isDisableRevert`: Optional boolean. Keeps the text split structure instead of calling `revert()` on complete.
+- **Usage**:
+  ```javascript
+  this.titleSplit = new FadeSplitText({ el: titleEl, splitType: 'chars' });
+  ```
+
+### 2. `ScaleInset` (Image Reveals)
+- **Purpose**: Elegant scale-down image zoom reveals.
+- **Usage**:
+  ```javascript
+  this.imgReveal = new ScaleInset({ el: imgEl, isDisableRevert: true });
+  ```
+
+### 3. `FadeIn` (General Opacity/Position Transitions)
+- **Purpose**: Standarized entrance transition for non-text/general elements (e.g. SVGs, wrapper blocks, buttons).
+- **Parameters**:
+  - `el`: Target element or array of elements.
+  - `type`: `'bottom'`, `'top'`, `'left'`, `'right'`, `'none'`, or `'default'`.
+  - `isDisableRevert`: Optional boolean.
+  - `stagger`: Stagger duration.
+  - `delay`: Timeline sequence delay (e.g., `'>-=0.3'`).
+- **Usage**:
+  ```javascript
+  this.contentFade = new FadeIn({ el: contentEl, type: 'bottom', isDisableRevert: true });
+  ```
+
+### 4. `MasterTimeline` (Orchestration & Synchronization)
+- **Purpose**: Combines multiple animation instances (`FadeSplitText`, `ScaleInset`, `FadeIn`) into a single coordinated timeline, handling font readiness asynchronously to ensure layout values are measured correctly.
+- **Parameters**:
+  - `timeline`: The parent GSAP timeline.
+  - `triggerInit`: The ScrollTrigger target element.
+  - `tweenArr`: Array of utility class instances.
+- **Usage**:
+  ```javascript
+  const tweenArr = [this.titleSplit, this.imgReveal, this.contentFade];
+  this.master = new MasterTimeline({
+    timeline: this.fadeTl,
+    triggerInit: this.el,
+    tweenArr: tweenArr
+  });
+  ```
+
+### 5. Standard Orchestration Blueprint
+Always initialize utility instances inside `setup()` and link them inside `animFade()` via `MasterTimeline` like so:
+
+```javascript
+setup() {
+  this.title = this.el.querySelector('.title');
+  this.img = this.el.querySelector('.img');
+  this.content = this.el.querySelector('.content');
+
+  // 1. Initialize all utilities
+  if (this.title) this.titleSplit = new FadeSplitText({ el: this.title, splitType: 'chars' });
+  if (this.img) this.imgAnim = new ScaleInset({ el: this.img, isDisableRevert: true });
+  if (this.content) this.contentFade = new FadeIn({ el: this.content, type: 'bottom', isDisableRevert: true });
+}
+
+animFade() {
+  // 2. Create parent ScrollTrigger timeline
+  this.fadeTl = gsap.timeline({
+    scrollTrigger: {
+      trigger: this.el,
+      start: 'top top+=75%',
+      once: true
+    }
+  });
+
+  // 3. Orchestrate with MasterTimeline
+  this.master = new MasterTimeline({
+    timeline: this.fadeTl,
+    triggerInit: this.el,
+    tweenArr: [this.titleSplit, this.imgAnim, this.contentFade]
+  });
+}
+
+destroy() {
+  // 4. Clean up all resources
+  super.cleanTrigger();
+  if (this.fadeTl) { this.fadeTl.kill(); this.fadeTl = null; }
+  if (this.master) { this.master.destroy(); this.master = null; }
+  if (this.titleSplit) { this.titleSplit.destroy(); this.titleSplit = null; }
+  if (this.imgAnim) { this.imgAnim.destroy(); this.imgAnim = null; }
+  if (this.contentFade) { this.contentFade.destroy(); this.contentFade = null; }
+}
+```
+
