@@ -977,11 +977,19 @@ const mainScript = () => {
         velocity: 0,
         direction: 0,
       };
-      this.lastScroller = {
-        scrollX: window.scrollX,
-        scrollY: window.scrollY,
-        velocity: 0,
-        direction: 0,
+      this.scrollKeys = { ArrowUp: 1, ArrowDown: 1, Space: 1, PageUp: 1, PageDown: 1, End: 1, Home: 1 };
+      this.preventDefault = (e) => {
+        if (e.cancelable) {
+          e.preventDefault();
+        }
+      };
+      this.preventDefaultForScrollKeys = (e) => {
+        if (this.scrollKeys[e.key] || this.scrollKeys[e.code]) {
+          if (e.cancelable) {
+            e.preventDefault();
+          }
+          return false;
+        }
       };
     }
 
@@ -1093,20 +1101,51 @@ const mainScript = () => {
       if (this.lenis) {
         this.lenis.start();
       }
-      $(".body").css("overflow", "initial");
+      this.enableScroll();
+      if (viewport.w <= 767) {
+        $(".body").css("overflow", "initial");
+      }
     }
 
     stop() {
       if (this.lenis) {
         this.lenis.stop();
       }
-      $(".body").css("overflow", "hidden");
+      this.disableScroll();
+      if (viewport.w <= 767) {
+        $(".body").css("overflow", "hidden");
+      }
+    }
+
+    disableScroll() {
+      this.enableScroll();
+      window.addEventListener('wheel', this.preventDefault, { passive: false });
+      window.addEventListener('touchmove', this.preventDefault, { passive: false });
+      window.addEventListener('keydown', this.preventDefaultForScrollKeys, { passive: false });
+    }
+
+    enableScroll() {
+      window.removeEventListener('wheel', this.preventDefault, { passive: false });
+      window.removeEventListener('touchmove', this.preventDefault, { passive: false });
+      window.removeEventListener('keydown', this.preventDefaultForScrollKeys, { passive: false });
     }
 
     scrollTo(target, options = {}) {
       if (this.lenis) {
         this.lenis.scrollTo(target, options);
       }
+    }
+
+    scrollToPosition(target) {
+      if (viewport.w <= 767) {
+        const bodyInner = document.querySelector(".body-inner");
+        if (bodyInner) {
+          bodyInner.scrollTop = target;
+        }
+      } else {
+        window.scrollTo(0, target);
+      }
+      ScrollTrigger.update();
     }
 
     scrollToTop(options = {}) {
@@ -1942,7 +1981,7 @@ const mainScript = () => {
             trigger: '.home_intro_wrap',
             start: 'top+=5% top',
             end: () => `bottom bottom`,
-            scrub: 1,
+            scrub: true,
             invalidateOnRefresh: true,
           }
         });
@@ -1950,16 +1989,6 @@ const mainScript = () => {
         this.introTl.to('.home_intro_main', {
           x: () => -viewport.w * .95,
           ease: 'none',
-        });
-
-        this.introImgTl = gsap.timeline({
-          scrollTrigger: {
-            trigger: '.home_intro_wrap',
-            start: `top+=6% top`,
-            end: `bottom bottom`,
-            invalidateOnRefresh: true,
-            scrub: true
-          }
         });
 
         this.introTl
@@ -1972,7 +2001,7 @@ const mainScript = () => {
             ease: 'none',
           }, 0)
           .to('.home_intro_img_list:nth-child(3)', {
-            x: '-=60%',
+            x: '-=45%',
             ease: 'none',
           }, 0)
           .to('.home_intro_img_list:nth-child(4)', {
@@ -1986,12 +2015,29 @@ const mainScript = () => {
           start: 'top+=5% top',
           end: () => `bottom bottom`,
           onLeave: () => {
-            this.savedX = [];
-            document.querySelectorAll('.home_intro_img_list').forEach((el, index) => {
-              this.savedX[index] = gsap.getProperty(el, 'x');
-            });
-
             smoothScroll.stop();
+            if (this.boundaryTrigger) {
+              smoothScroll.scrollToPosition(this.boundaryTrigger.end + 5);
+            }
+            if (this.introTl && this.introTl.scrollTrigger) {
+              this.introTl.scrollTrigger.disable(false);
+            }
+
+            gsap.timeline({
+              onComplete: () => {
+                smoothScroll.start();
+              }
+            })
+              .to('.home_intro_img_list:nth-child(1)', { x: '-180%', duration: 1, ease: 'power2.inOut', overwrite: 'auto' }, 0)
+              .to('.home_intro_img_list:nth-child(2)', { x: '220%', duration: 1, ease: 'power2.inOut', overwrite: 'auto' }, 0)
+              .to('.home_intro_img_list:nth-child(3)', { x: '-180%', duration: 1, ease: 'power2.inOut', overwrite: 'auto' }, 0)
+              .to('.home_intro_img_list:nth-child(4)', { x: '240%', duration: 1, ease: 'power2.inOut', overwrite: 'auto' }, 0);
+          },
+          onEnterBack: () => {
+            smoothScroll.stop();
+            if (this.boundaryTrigger) {
+              smoothScroll.scrollToPosition(this.boundaryTrigger.end - 5);
+            }
             if (this.introTl && this.introTl.scrollTrigger) {
               this.introTl.scrollTrigger.disable(false);
             }
@@ -2004,38 +2050,16 @@ const mainScript = () => {
                 smoothScroll.start();
               }
             })
-            .to('.home_intro_img_list:nth-child(1)', { x: '-=150%', duration: 1, ease: 'power2.inOut', overwrite: 'auto' }, 0)
-            .to('.home_intro_img_list:nth-child(2)', { x: '+=150%', duration: 1, ease: 'power2.inOut', overwrite: 'auto' }, 0)
-            .to('.home_intro_img_list:nth-child(3)', { x: '-=150%', duration: 1, ease: 'power2.inOut', overwrite: 'auto' }, 0)
-            .to('.home_intro_img_list:nth-child(4)', { x: '+=150%', duration: 1, ease: 'power2.inOut', overwrite: 'auto' }, 0);
-          },
-          onEnterBack: () => {
-            if (this.savedX && this.savedX.length > 0) {
-              smoothScroll.stop();
-              if (this.introTl && this.introTl.scrollTrigger) {
-                this.introTl.scrollTrigger.disable(false);
-              }
-
-              gsap.timeline({
-                onComplete: () => {
-                  if (this.introTl && this.introTl.scrollTrigger) {
-                    this.introTl.scrollTrigger.enable(false);
-                  }
-                  smoothScroll.start();
-                }
-              })
-              .to('.home_intro_img_list:nth-child(1)', { x: this.savedX[0], duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0)
-              .to('.home_intro_img_list:nth-child(2)', { x: this.savedX[1], duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0)
-              .to('.home_intro_img_list:nth-child(3)', { x: this.savedX[2], duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0)
-              .to('.home_intro_img_list:nth-child(4)', { x: this.savedX[3], duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0);
-            }
+              .to('.home_intro_img_list:nth-child(1)', { x: '-30%', duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0)
+              .to('.home_intro_img_list:nth-child(2)', { x: '70%', duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0)
+              .to('.home_intro_img_list:nth-child(3)', { x: '-20%', duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0)
+              .to('.home_intro_img_list:nth-child(4)', { x: '90%', duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0);
           }
         });
       }
       destroy() {
         super.cleanTrigger();
         if (this.introTl) this.introTl.kill();
-        if (this.introImgTl) this.introImgTl.kill();
         if (this.boundaryTrigger) this.boundaryTrigger.kill();
         gsap.killTweensOf('.home_intro_img_list');
         smoothScroll.start();
@@ -2095,6 +2119,11 @@ const mainScript = () => {
         }
         if (this.btn) {
           this.btnFade = new FadeIn({ el: this.btn, type: 'bottom', isDisableRevert: true, delay: 1 });
+        }
+
+        this.pattern = this.el.querySelector('.home_clients_pattern');
+        if (this.pattern) {
+          gsap.set(this.pattern, { opacity: 0 });
         }
       }
       interact() {
@@ -2171,7 +2200,23 @@ const mainScript = () => {
           });
         }
       }
-      animScrub() { }
+      animScrub() {
+        if (!this.pattern) return;
+
+        this.scrubTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: this.el,
+            start: 'top top+=75%',
+            toggleActions: 'play reset play reset',
+            invalidateOnRefresh: true
+          }
+        });
+
+        this.scrubTl.fromTo(this.pattern,
+          { opacity: 0, xPercent: -50 },
+          { opacity: 1, xPercent: 0, duration: 1.2, ease: 'power2.out' }
+        );
+      }
       destroy() {
         super.cleanTrigger();
         if (this.tabClickHandler) {
@@ -2249,6 +2294,7 @@ const mainScript = () => {
         // Query the elements for the top title split & fadein
         this.sub = this.el.querySelector('.home_services_sub');
         this.title = this.el.querySelector('.home_services_title');
+        this.desc = this.el.querySelector('.home_services_des');
         this.bgItems = this.el.querySelectorAll('.home_services_top_bg');
 
         // Create FadeSplitText
@@ -2257,6 +2303,9 @@ const mainScript = () => {
         }
         if (this.title) {
           this.fadeSplitTitle = new FadeSplitText({ el: this.title, splitType: 'chars' });
+        }
+        if (this.desc) {
+          this.descFade = new FadeSplitText({ el: this.desc, splitType: 'chars' });
         }
 
         // Create FadeIn for top background SVGs
@@ -2328,6 +2377,7 @@ const mainScript = () => {
         const tweenArr = [];
         if (this.subFade) tweenArr.push(this.subFade);
         if (this.fadeSplitTitle) tweenArr.push(this.fadeSplitTitle);
+        if (this.descFade) tweenArr.push(this.descFade);
         if (this.bgFade) tweenArr.push(this.bgFade);
 
         this.master = new MasterTimeline({
@@ -2517,6 +2567,16 @@ const mainScript = () => {
           // Ensure the span itself is fully opaque now that GSAP handles overflow/visibility
           gsap.set(span, { opacity: 1 });
         });
+
+        // Query background decorative elements
+        this.topDeco = this.el.querySelector('.home_specialize_bg_deco_item.top');
+        this.centerDeco = this.el.querySelector('.home_specialize_bg_deco_item.center');
+        this.bottomDeco = this.el.querySelector('.home_specialize_bg_deco_item.bottom');
+
+        // Hide deco elements initially for fade entry
+        if (this.topDeco) gsap.set(this.topDeco, { opacity: 0, yPercent: -40 });
+        if (this.centerDeco) gsap.set(this.centerDeco, { opacity: 0, xPercent: -80 });
+        if (this.bottomDeco) gsap.set(this.bottomDeco, { opacity: 0, yPercent: 40 });
       }
       animFade() {
         this.fadeTl = gsap.timeline({
@@ -2529,6 +2589,17 @@ const mainScript = () => {
             this.startLoop();
           }
         });
+
+        // Fade in decorative items along with text fade
+        if (this.topDeco) {
+          this.fadeTl.to(this.topDeco, { opacity: 1, yPercent: 0, duration: 1.2, ease: 'power2.out' }, 0);
+        }
+        if (this.centerDeco) {
+          this.fadeTl.to(this.centerDeco, { opacity: 1, xPercent: 0, duration: 1.2, ease: 'power2.out' }, 0.2);
+        }
+        if (this.bottomDeco) {
+          this.fadeTl.to(this.bottomDeco, { opacity: 1, yPercent: 0, duration: 1.2, ease: 'power2.out' }, 0.4);
+        }
 
         const tweenArr = [];
         if (this.fadeSplit1) tweenArr.push(this.fadeSplit1);
@@ -2548,14 +2619,15 @@ const mainScript = () => {
         const centerDeco = this.el.querySelector('.home_specialize_bg_deco_item.center');
         const bottomDeco = this.el.querySelector('.home_specialize_bg_deco_item.bottom');
         const bgColor = this.el.querySelector('.home_specialize_bg_color_inner');
+        const bgImg = this.el.querySelector('.home_specialize_bg img');
 
         // Create a scroll-scrubbed timeline tied to the sticky scroll container
         this.scrubTl = gsap.timeline({
           scrollTrigger: {
             trigger: this.el,
-            start: 'top top',
-            end: `bottom-=${viewport.h / 2}px bottom`,
-            scrub: 1,
+            start: 'top+=10% top',
+            end: `bottom-=${viewport.h * 3 / 2} bottom`,
+            scrub: true,
             invalidateOnRefresh: true
           }
         });
@@ -2599,6 +2671,13 @@ const mainScript = () => {
               const gap = paddingContainerStr.endsWith('rem') ? paddingValue * rootFontSize : paddingValue;
               return (vh - 2 * gap) / vh;
             },
+            ease: 'none',
+            transformOrigin: "center center",
+          }, 0.4);
+        }
+        if (bgImg) {
+          this.scrubTl.to(bgImg, {
+            scale: 1.3,
             ease: 'none',
             transformOrigin: "center center",
           }, 0.4);
@@ -2729,7 +2808,7 @@ const mainScript = () => {
           this.subFade = new FadeIn({ el: this.subtitle, type: 'bottom', isDisableRevert: true });
         }
         if (this.title) {
-          this.titleSplit = new MaskTextColor({ el: this.title });
+          this.titleSplit = new FadeSplitText({ el: this.title });
         }
         if (this.items.length > 0) {
           this.itemsFade = new FadeIn({
@@ -2833,6 +2912,7 @@ const mainScript = () => {
         super();
         this.tabClickHandler = null;
         this.observer = null;
+        this.scrubTl = null;
       }
       trigger(data) {
         this.el = document.querySelector('.home_clients');
@@ -2887,7 +2967,8 @@ const mainScript = () => {
         $('.home_clients_tab_item').on('click', this.tabClickHandler);
       }
       animFade() { }
-      animScrub() { }
+      animScrub() {
+      }
       destroy() {
         super.cleanTrigger();
         if (this.tabClickHandler) {
@@ -2895,6 +2976,10 @@ const mainScript = () => {
         }
         if (this.observer) {
           this.observer.disconnect();
+        }
+        if (this.scrubTl) {
+          this.scrubTl.kill();
+          this.scrubTl = null;
         }
       }
     }

@@ -362,6 +362,14 @@ h2 {
     color: #E62636 !important;
 }
 
+.cl_fb {
+    color: #FBDDDF;
+}
+
+.bg_red {
+    background-color: #910F04 !important;
+}
+
 .cl_white {
     color: #fff;
 }

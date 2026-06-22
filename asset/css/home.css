@@ -70,7 +70,7 @@
 }
 
 .home_specialize_block {
-    height: 120vh;
+    height: 270vh;
 }
 
 .home_specialize_bg_color_inner {
@@ -255,6 +255,7 @@
     grid-column: 1/-1;
     grid-row: auto;
     will-change: transform;
+    margin-top: -2px;
 }
 
 .home_intro_img_list:nth-child(2n) {
@@ -349,6 +350,12 @@
 }
 
 /* home_services */
+.home_services {
+    position: relative;
+    z-index: 5;
+    margin-top: -100%;
+}
+
 .home_services_top {
     padding-block: 10rem;
     background-color: #E62636;
@@ -376,6 +383,7 @@
 .home_services_title {
     max-width: 86.4rem;
     margin-inline: auto;
+    margin-bottom: 3.2rem;
 }
 
 .home_services_sub {
@@ -403,7 +411,7 @@
     left: 0;
     width: 0%;
     height: 4px;
-    background: linear-gradient(90deg, #E62636 0%, #EBEBEB 100%);
+    background-color: #E62636;
     z-index: 100;
     will-change: width;
 }
@@ -434,7 +442,7 @@
 }
 
 .home_services_sub::before {
-    background: url('../image/ic_arrow_white.svg') no-repeat !important;
+    background-image: url('../image/ic_arrow_white.svg') !important;
 }
 
 .home_services_content {
@@ -477,11 +485,12 @@
     position: relative;
     padding-left: 1.6rem;
     cursor: pointer;
-    transition: padding-left .4s ease;
+    transition: padding-left .4s ease, color .4s ease;
 }
 
 .home_services_content_bottom_list_item:hover {
     padding-left: 2rem;
+    color: white;
 }
 
 .home_services_content_bottom_list_item:hover svg path {
@@ -518,6 +527,7 @@
 
     .home_services_title {
         text-align: left;
+        margin-bottom: 2rem;
     }
 
     .home_services_top {
@@ -616,7 +626,7 @@
 }
 
 .home_case_content_item::before {
-    background-color: #262626;
+    background-color: #131313;
     content: "";
     top: 0;
     bottom: 0;
@@ -811,6 +821,10 @@
     margin-bottom: 3.2rem;
 }
 
+.home_clients {
+    position: relative;
+}
+
 .home_clients_title {
     width: 63rem;
     margin-inline: auto;
@@ -876,11 +890,20 @@
     transform: scale(1.1);
 }
 
+.home_clients_pattern {
+    position: absolute;
+    left: 0;
+    top: -10rem;
+    width: 28.3rem;
+    pointer-events: none;
+    z-index: 0;
+}
+
 .home_clients_content_item_img {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #131313;
+    background-color: #F1E6E6;
     width: calc(16.66% - 2rem);
     padding-block: 3.3rem;
     cursor: pointer;
