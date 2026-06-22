@@ -31,22 +31,66 @@
     grid-column: 10/13;
 }
 
+@media only screen and (max-width: 991px) {
+    .casestudy_hero .container {
+        padding-block: 10rem;
+    }
+
+    .casestudy_hero_des {
+        grid-column: 6/9;
+    }
+
+    .casestudy_hero_title {
+        grid-column: 1/6;
+    }
+
+    .casestudy_hero_bg {
+        transform: translate(20%, -50%);
+        filter: blur(12rem);
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    .casestudy_hero_bg {
+        width: 82.69%;
+        transform: translate(20%, -1%);
+        filter: blur(10rem);
+    }
+
+    .casestudy_hero .container {
+        padding-block: 9.6rem 4.8rem;
+    }
+
+    .casestudy_hero_des {
+        grid-column: 1/5;
+        text-align: left;
+    }
+
+    .casestudy_hero_title {
+        grid-column: 1/5;
+        margin-bottom: 3.2rem;
+    }
+
+}
+
 /*casestudy_content  */
 .casestudy_content {
     padding-bottom: 10rem;
 }
 
+.home_case_subtitle {
+    width: max-content;
+    margin-inline: auto;
+    margin-bottom: 3.2rem;
+}
+
+.home_case_title {
+    margin-bottom: 5.6rem;
+}
+
 .home_case_content_list {
     display: flex;
     flex-wrap: wrap;
-}
-
-.home_case_content_list {
-    margin-bottom: 6.4rem;
-}
-
-.home_case_content_list {
-    border-bottom: 1px solid #262626;
 }
 
 .home_case_content_item {
@@ -59,8 +103,12 @@
     position: relative;
 }
 
+.home_case_content_item:nth-child(2n+1) {
+    border-right: 1px solid #262626;
+}
+
 .home_case_content_item::before {
-    background-color: #262626;
+    background-color: #131313;
     content: "";
     top: 0;
     bottom: 0;
@@ -78,6 +126,10 @@
     padding-left: 4.8rem;
 }
 
+
+.home_case_content {
+    display: flex;
+}
 
 
 .home_case_content_item_txt_title {
@@ -120,6 +172,7 @@
 }
 
 .home_case_content_item:hover {
+
     .home_case_content_item_txt_icon_wrap {
         transform: translate(100%, -100%);
     }
@@ -138,7 +191,7 @@
 
     .home_case_content_item_img {
         opacity: 1;
-        transform: translateY(-50%) scale(1, 1);
+        clip-path: inset(0% 0 0% 0);
     }
 }
 
@@ -146,13 +199,110 @@
     position: absolute;
     opacity: 0;
     right: 12rem;
+    width: 30rem;
     top: 50%;
-    transform: translateY(-50%) scale(1, 0);
-    transition: opacity .6s cubic-bezier(0.785, 0.135, 0.15, 0.86), transform .6s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+    transform: translateY(-50%);
+    clip-path: inset(50% 0 50% 0);
+    transition: opacity .6s cubic-bezier(0.785, 0.135, 0.15, 0.86),
+        clip-path .6s cubic-bezier(0.785, 0.135, 0.15, 0.86);
     pointer-events: none;
-    z-index: 2;
+    z-index: 11;
+}
+
+.home_case_content_list {
+    margin-bottom: 6.4rem;
+}
+
+.home_case_content_list {
+    border-bottom: 1px solid #262626;
 }
 
 .home_case_seeview {
     margin-inline: auto;
+}
+
+@media only screen and (max-width:991px) {
+    .home_case_content_item_img_outer {
+        order: 2;
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+
+    .home_case_content_item_des {
+        order: 1;
+    }
+
+    .home_case_content_item_img {
+        position: relative;
+        opacity: 1;
+        transform: translate(0);
+        width: 100%;
+        height: 100%;
+        clip-path: unset;
+        inset: unset;
+        margin-bottom: 1.6rem;
+        pointer-events: all;
+    }
+}
+
+@media only screen and (max-width:767px) {
+    .home_case_subtitle {
+        margin-inline: unset;
+        margin-bottom: 1.6rem;
+    }
+
+    .home_case_title {
+        margin-bottom: 4.8rem;
+    }
+
+    .home_case_content_list {
+        flex-direction: column;
+    }
+
+    .home_case_content_item {
+        width: 100%;
+        padding: 2.4rem 1.6rem;
+    }
+
+
+    .home_case_content_item_txt_icon_wrap {
+        width: 3.2rem;
+    }
+
+    .home_case_content_item:hover {
+        .home_case_content_item_txt_icon_wrap {
+            transform: translate(0);
+        }
+
+        .home_case_content_item_txt_icon_wrap.active {
+            transform: translate(100%, -100%);
+        }
+
+        .home_case_content_item_txt_title {
+            color: auto;
+        }
+
+        &::before {
+            right: 100%;
+        }
+
+        .home_case_content_item_img {
+            opacity: 1;
+            clip-path: inset(0% 0 0% 0);
+        }
+
+    }
+
+    .home_case {
+        padding-bottom: 0;
+    }
+
+    .home_case_content_list {
+        margin-bottom: 3.2rem;
+    }
+
+    .casestudy_content {
+        padding-bottom: 6.4rem;
+    }
 }

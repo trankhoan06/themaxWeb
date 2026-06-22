@@ -38,7 +38,29 @@
     opacity: .7;
 }
 
+@media only screen and (max-width:767px) {
+    .about_hero .container {
+        padding-top: 12.8rem;
+    }
+
+    .about_hero_content {
+        gap: 4.8rem;
+
+    }
+
+    .about_hero_content_left {
+        grid-column: 1/5;
+    }
+
+    .about_hero_content_right {
+        grid-column: 3/5;
+    }
+}
+
 /* about_impressive */
+.about_impressive {
+    padding-top: 10rem;
+}
 
 .about_impressive_right_list_item_num {
     margin-bottom: 1.2rem;
@@ -68,6 +90,72 @@
 
 .about_impressive_left_img {
     margin-top: -.5rem;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@media only screen and (max-width:991px) {
+    .about_impressive .container {
+        position: relative;
+    }
+
+    .about_impressive_left_img {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
+
+    .about_impressive_left {
+        grid-column: 1/3;
+    }
+
+    .about_impressive_right {
+        grid-column: 3/9;
+        padding-bottom: 6rem;
+    }
+}
+
+@media only screen and (max-width:767px) {
+    .about_impressive_left {
+        grid-column: 1/5;
+    }
+
+    .about_impressive_right {
+        grid-column: 1/5;
+        margin-right: 2rem;
+    }
+
+    .about_impressive {
+        padding-top: 4.6rem;
+    }
+
+    .about_impressive_left {
+        margin-bottom: 1.6rem;
+    }
+
+    .about_impressive_right_title {
+        margin-bottom: 1.6rem;
+    }
+
+    .about_impressive_right_des {
+        margin-bottom: 4.8rem;
+    }
+
+    .about_impressive_right_list {
+        flex-wrap: wrap;
+    }
+
+    .about_impressive_right_list_item {
+        width: calc(50% - 1.2rem);
+    }
+
+    .about_impressive_right_list_item_des {
+        font-size: 1.5rem;
+    }
+
+    .about_impressive_right {
+        padding-bottom: 6.4rem;
+    }
 }
 
 /* about_company */
@@ -85,6 +173,16 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+}
+
+@media only screen and (max-width:767px) {
+    .about_company {
+        height: auto;
+    }
+
+    .about_company_inner {
+        background-attachment: unset;
+    }
 }
 
 /* about_best */
@@ -156,6 +254,58 @@
 
 .about_best_left svg path:nth-child(3):hover~path:nth-child(4) {
     fill: #E62636;
+}
+
+.about_best_right_des {
+    margin-bottom: 1.6rem;
+}
+
+.about_best_subtitle {
+    margin-bottom: 3.2rem;
+}
+
+@media only screen and (max-width:991px) {
+    .about_best_left {
+        grid-column: 1/9;
+    }
+
+    .about_best_right {
+        grid-column: 1/9;
+    }
+
+    .about_best_inner {
+        gap: 2rem;
+    }
+}
+
+@media only screen and (max-width:767px) {
+    .about_best {
+        padding-block: 6.4rem;
+    }
+
+    .about_best_subtitle {
+        margin-bottom: 1.6rem;
+    }
+
+    .about_best_title {
+        margin-bottom: 3.2rem;
+    }
+
+    .about_best_title br {
+        display: none;
+    }
+
+    .about_best_inner {
+        gap: 4.8rem
+    }
+
+    .about_best_right {
+        font-size: 1.4rem;
+    }
+
+    .about_best_right_des {
+        margin-bottom: 1.2rem;
+    }
 }
 
 
@@ -253,8 +403,9 @@
     position: absolute;
     width: 62.5rem;
     padding: 3.2rem;
-    background: rgba(32, 32, 32, 0.5);
+    background: rgba(16, 16, 16, 0.5);
     backdrop-filter: blur(4.8rem);
+    -webkit-backdrop-filter: blur(4.8rem);
     bottom: 1.6rem;
     left: 1.6rem;
 }
@@ -321,4 +472,86 @@
 .about_team_card_item_content_bot_page {
     gap: .4rem;
     display: flex;
+}
+
+@media only screen and (max-width:991px) {
+    .about_team .container {
+        padding-top: 6rem;
+    }
+
+    .about_team_title {
+        width: auto;
+    }
+
+    .about_team_content_inner .about_team_content_item {
+        grid-column: 1/5;
+    }
+
+    .about_team_content_inner .about_team_content_item:nth-child(2n) {
+        grid-column: 5/9;
+    }
+
+    .about_team_content {
+        padding-top: 10rem;
+    }
+}
+
+@media only screen and (max-width:767px) {
+    .about_team .container {
+        padding-block: 6.4rem;
+    }
+
+    .about_team_subtitle {
+        margin-inline: unset;
+        margin-bottom: 1.6rem;
+    }
+
+    .about_team_title {
+        text-align: left;
+        margin-bottom: 1.6rem;
+    }
+
+    .about_team_des {
+        text-align: left;
+    }
+
+    .about_team_des br {
+        display: none;
+    }
+
+    .about_team_content {
+        padding-top: 4.8rem;
+    }
+
+    .about_team_content_item {
+        grid-column: 1/5 !important;
+        grid-row: auto !important;
+        margin-top: 0 !important;
+    }
+
+    .about_team_content_inner {
+        gap: 1.6rem !important;
+    }
+
+    .about_team_bg {
+        top: 9.6rem;
+        width: 100%;
+    }
+
+    .about_team_card_img {
+        margin-left: -1.6rem;
+        margin-right: -1.6rem;
+    }
+
+    .about_team_card_item_content {
+        position: relative;
+        inset: unset;
+        width: 100%;
+        padding: 1.6rem;
+        margin-top: -6rem;
+    }
+
+    .about_team_card_item_content_des {
+        margin-bottom: 1.6rem;
+    }
 }
