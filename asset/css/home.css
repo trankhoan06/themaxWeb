@@ -48,12 +48,12 @@
 
     0%,
     100% {
-        transform: translateY(-02rem);
+        transform: translateY(-.3rem);
         opacity: 0.6;
     }
 
     50% {
-        transform: translateY(0rem);
+        transform: translateY(.3rem);
         opacity: 1;
     }
 }
