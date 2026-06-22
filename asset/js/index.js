@@ -61,58 +61,62 @@ const mainScript = () => {
       this.tweenArr.forEach((item) => item.destroy?.());
     }
   }
-  class RevealText {
-    constructor({ el, color, delay, isDisableRevert, isHighlight = false, isFast = false, ...props }) {
-      this.DOM = { el: el };
-      this.color = color;
-      this.textSplit = [];
-      this.delay = delay;
-      this.textSplit = SplitText.create(this.DOM.el, { type: 'lines, words' });
-      const isColorDefault = this.color === 'white' || this.color === 'black';
-      this.fromColor = !isColorDefault ? 'rgba(255,255,255, 0)' : this.color == 'white' ? 'rgba(255,255,255, 0)' : 'rgba(29,29,29, 0)';
-      this.toColor = !isColorDefault ? this.color : this.color == 'white' ? 'rgba(255,255,255, 1)' : 'rgba(29,29,29, 1)';
+  const useSplitPretext = ({ selector, type, isMask }) => {
+    const textSplit = SplitText.create(selector, { type: type });
+    return {
+      elements: textSplit[type] || textSplit.lines,
+      revert: () => textSplit.revert()
+    };
+  };
 
-      if (isHighlight) {
-        this.animation = gsap.timeline({
+  class MaskTextColor {
+    constructor({ el, delay, isDisableRevert, ...props }) {
+      const target = el && el.jquery ? el.get(0) : el;
+      if (!target || target.textContent === '') return;
+      this.DOM = { el: target };
+      this.delay = delay;
+      document.fonts.ready.then(() => {
+        // ── Capture rendered height BEFORE split (respects line-clamp) ──
+        const clampedHeight = this.DOM.el.offsetHeight;
+        const isClamped = this.DOM.el.scrollHeight > clampedHeight + 1;
+
+        gsap.set(this.DOM.el, { width: this.DOM.el.offsetWidth + 5 });
+        const result = useSplitPretext({ selector: this.DOM.el, type: 'lines', isMask: false });
+        if (!result) return;
+
+        const lines = result.elements;
+
+        // ── Lock height if element was clamped (split destroys -webkit-line-clamp) ──
+        if (isClamped) {
+          gsap.set(this.DOM.el, { height: clampedHeight, overflow: 'hidden' });
+        }
+
+        lines.forEach(line => {
+          line.classList.add('split-line-p');
+          const color = window.getComputedStyle(line.parentElement).color;
+          gsap.set(line, { '--color-final': color });
+        });
+
+        gsap.set(lines, { '--bg-progress': '30' });
+
+        this.animation = gsap.to(lines, {
+          '--bg-progress': '100',
+          stagger: 0.1,
+          duration: 1.2,
+          ease: 'power1.inOut',
           onComplete: () => {
             if (!isDisableRevert) {
-              this.textSplit.revert();
+              result.revert();
+              if (isClamped) {
+                gsap.set(this.DOM.el, { clearProps: 'height,overflow' });
+              }
             }
           },
           ...props
         });
-        this.textSplit.words.forEach((word, idx) => {
-          let toColor = word.closest('.txt-highlight') ? '#FF6B30' : this.toColor;
-          this.animation.to(word, {
-            keyframes: {
-              color: [this.fromColor, '#FF6B30', toColor],
-              easeEach: 'power2.in',
-              ease: 'power1.out',
-            },
-            duration: isFast ? 0.8 : 1
-          }, idx * (isFast ? 0.03 : 0.08))
-        });
-      }
-      else {
-        this.animation = gsap.to(this.textSplit.words, {
-          keyframes: {
-            color: [this.fromColor, '#232323', this.toColor],
-            easeEach: 'power2.in',
-            ease: 'power1.out',
-          },
-          duration: isFast ? 0.8 : 1,
-          stagger: isFast ? 0.03 : 0.08,
-          onComplete: () => {
-            if (!isDisableRevert) {
-              this.textSplit.revert();
-            }
-          },
-          ...props
-        })
-      }
+      });
     }
     init() {
-      gsap.set(this.textSplit.words, { color: this.fromColor });
     }
   }
   class RevealTextReset {
@@ -1944,27 +1948,27 @@ const mainScript = () => {
         });
 
         this.introTl.to('.home_intro_main', {
-          x: () => -viewport.w * 1.3,
+          x: () => -viewport.w * .95,
           ease: 'none',
         });
 
         this.introImgTl = gsap.timeline({
           scrollTrigger: {
             trigger: '.home_intro_wrap',
-            start: `top+=10% top`,
+            start: `top+=6% top`,
             end: `bottom bottom`,
             invalidateOnRefresh: true,
             scrub: true
           }
         });
 
-        this.introImgTl
+        this.introTl
           .to('.home_intro_img_list:nth-child(1)', {
             x: '-=90%',
             ease: 'none',
           }, 0)
           .to('.home_intro_img_list:nth-child(2)', {
-            x: '+=90%',
+            x: '+=55%',
             ease: 'none',
           }, 0)
           .to('.home_intro_img_list:nth-child(3)', {
@@ -1975,11 +1979,66 @@ const mainScript = () => {
             x: '+=80%',
             ease: 'none',
           }, 0);
+
+        // Helper trigger to control exit/entry locking and animation without scrub conflicts
+        this.boundaryTrigger = ScrollTrigger.create({
+          trigger: '.home_intro_wrap',
+          start: 'top+=5% top',
+          end: () => `bottom bottom`,
+          onLeave: () => {
+            this.savedX = [];
+            document.querySelectorAll('.home_intro_img_list').forEach((el, index) => {
+              this.savedX[index] = gsap.getProperty(el, 'x');
+            });
+
+            smoothScroll.stop();
+            if (this.introTl && this.introTl.scrollTrigger) {
+              this.introTl.scrollTrigger.disable(false);
+            }
+
+            gsap.timeline({
+              onComplete: () => {
+                if (this.introTl && this.introTl.scrollTrigger) {
+                  this.introTl.scrollTrigger.enable(false);
+                }
+                smoothScroll.start();
+              }
+            })
+            .to('.home_intro_img_list:nth-child(1)', { x: '-=150%', duration: 1, ease: 'power2.inOut', overwrite: 'auto' }, 0)
+            .to('.home_intro_img_list:nth-child(2)', { x: '+=150%', duration: 1, ease: 'power2.inOut', overwrite: 'auto' }, 0)
+            .to('.home_intro_img_list:nth-child(3)', { x: '-=150%', duration: 1, ease: 'power2.inOut', overwrite: 'auto' }, 0)
+            .to('.home_intro_img_list:nth-child(4)', { x: '+=150%', duration: 1, ease: 'power2.inOut', overwrite: 'auto' }, 0);
+          },
+          onEnterBack: () => {
+            if (this.savedX && this.savedX.length > 0) {
+              smoothScroll.stop();
+              if (this.introTl && this.introTl.scrollTrigger) {
+                this.introTl.scrollTrigger.disable(false);
+              }
+
+              gsap.timeline({
+                onComplete: () => {
+                  if (this.introTl && this.introTl.scrollTrigger) {
+                    this.introTl.scrollTrigger.enable(false);
+                  }
+                  smoothScroll.start();
+                }
+              })
+              .to('.home_intro_img_list:nth-child(1)', { x: this.savedX[0], duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0)
+              .to('.home_intro_img_list:nth-child(2)', { x: this.savedX[1], duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0)
+              .to('.home_intro_img_list:nth-child(3)', { x: this.savedX[2], duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0)
+              .to('.home_intro_img_list:nth-child(4)', { x: this.savedX[3], duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0);
+            }
+          }
+        });
       }
       destroy() {
         super.cleanTrigger();
         if (this.introTl) this.introTl.kill();
         if (this.introImgTl) this.introImgTl.kill();
+        if (this.boundaryTrigger) this.boundaryTrigger.kill();
+        gsap.killTweensOf('.home_intro_img_list');
+        smoothScroll.start();
       }
     },
     Clients: class extends TriggerSetup {
@@ -2048,7 +2107,7 @@ const mainScript = () => {
           let tabId = $(this).attr('data-tabs');
 
           $('.home_clients_content_item').hide();
-          
+
           const $target = $('.home_clients_content_item[data-tabs="' + tabId + '"]');
           $target.css('display', 'flex');
 
@@ -2670,7 +2729,7 @@ const mainScript = () => {
           this.subFade = new FadeIn({ el: this.subtitle, type: 'bottom', isDisableRevert: true });
         }
         if (this.title) {
-          this.titleSplit = new FadeSplitText({ el: this.title, splitType: 'chars' });
+          this.titleSplit = new MaskTextColor({ el: this.title });
         }
         if (this.items.length > 0) {
           this.itemsFade = new FadeIn({

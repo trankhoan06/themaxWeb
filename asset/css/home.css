@@ -88,6 +88,7 @@
     position: relative;
     margin-top: -100dvh;
     z-index: 2;
+    opacity: 1;
 }
 
 .home_specialize .container {
@@ -231,7 +232,7 @@
 .home_intro_wrap {
     contain: paint;
     position: relative;
-    z-index: 2;
+    z-index: 4;
 }
 
 .home_intro_img_cms {
@@ -239,9 +240,10 @@
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr 1fr 1fr;
     position: relative;
-    z-index: 2;
+    z-index: 4;
     flex: none;
     width: 100vw;
+
     /* Xoay 45° + scale bù để phủ kín viewport */
     transform: rotate(-60deg);
     transform-origin: center center;

@@ -1379,3 +1379,13 @@ h2 {
         text-align: left;
     }
 }
+
+.split-line-p {
+    --color-final: currentColor;
+    --bg-progress: 0;
+    background-image: linear-gradient(to right, var(--color-final) calc(var(--bg-progress) * 1%), rgba(255, 255, 255, 0.15) calc(var(--bg-progress) * 1%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+}
