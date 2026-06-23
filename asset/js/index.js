@@ -374,7 +374,7 @@ const mainScript = () => {
           to: { opacity: 1, y: 0, ...to }
         },
         left: {
-          set: { opacity: 0, x: parseRem(32), ...from },
+          set: { opacity: 0, x: parseRem(-100), ...from },
           to: { opacity: 1, x: 0, ...to },
         },
         right: {
@@ -3204,13 +3204,7 @@ const mainScript = () => {
             isDisableRevert: true,
           });
         }
-        if (this.img) {
-          this.imgFade = new FadeIn({
-            el: this.img,
-            type: 'left',
-            isDisableRevert: true,
-          });
-        }
+
         if (this.title) {
           this.titleSplit = new FadeSplitText({
             el: this.title,
@@ -3221,11 +3215,14 @@ const mainScript = () => {
           });
         }
         if (this.des) {
-          this.desFade = new FadeIn({
+          this.desFade = new FadeSplitText({
             el: this.des,
-            type: 'bottom',
+            splitType: 'words',
             isDisableRevert: true,
-            delay: 0.2,
+            delay: 1,
+            duration: 1.0,
+            stagger: 0.02,
+
           });
         }
         if (this.items.length > 0) {
@@ -3234,6 +3231,15 @@ const mainScript = () => {
             type: 'bottom',
             stagger: 0.1,
             isDisableRevert: true,
+            delay: 1,
+          });
+        }
+        if (this.img) {
+          this.imgFade = new FadeIn({
+            el: this.img,
+            type: 'left',
+            isDisableRevert: true,
+            delay: 1.3
           });
         }
       }
@@ -3241,23 +3247,23 @@ const mainScript = () => {
         this.fadeTl = gsap.timeline({
           scrollTrigger: {
             trigger: this.el,
-            start: 'top top+=80%',
+            start: 'top top+=70%',
             once: true
           }
         });
 
         const tweenArr = [];
         if (this.subFade) tweenArr.push(this.subFade);
-        if (this.imgFade) tweenArr.push(this.imgFade);
         if (this.titleSplit) tweenArr.push(this.titleSplit);
         if (this.desFade) tweenArr.push(this.desFade);
         if (this.listItemsFade) tweenArr.push(this.listItemsFade);
+        if (this.imgFade) tweenArr.push(this.imgFade);
 
         this.master = new MasterTimeline({
           timeline: this.fadeTl,
           triggerInit: this.el,
           tweenArr: tweenArr,
-          stagger: 0.15
+          stagger: 0.3
         });
       }
       destroy() {
