@@ -292,7 +292,7 @@ const mainScript = () => {
                 ...props
               });
               tl.to(self.elements[0], {
-                x: 100,
+                x: viewport.w > 992 ? 100 : 32,
                 duration: 0.6,
                 ease: 'power2.out',
                 onComplete: () => {
@@ -1103,7 +1103,7 @@ const mainScript = () => {
       }
       this.enableScroll();
       if (viewport.w <= 767) {
-        $(".body").css("overflow", "initial");
+        $("body").css("overflow", "initial");
       }
     }
 
@@ -1113,7 +1113,7 @@ const mainScript = () => {
       }
       this.disableScroll();
       if (viewport.w <= 767) {
-        $(".body").css("overflow", "hidden");
+        $("body").css("overflow", "hidden");
       }
     }
 
@@ -1121,12 +1121,14 @@ const mainScript = () => {
       this.enableScroll();
       window.addEventListener('wheel', this.preventDefault, { passive: false });
       window.addEventListener('touchmove', this.preventDefault, { passive: false });
+      document.addEventListener('touchmove', this.preventDefault, { passive: false });
       window.addEventListener('keydown', this.preventDefaultForScrollKeys, { passive: false });
     }
 
     enableScroll() {
       window.removeEventListener('wheel', this.preventDefault, { passive: false });
       window.removeEventListener('touchmove', this.preventDefault, { passive: false });
+      document.removeEventListener('touchmove', this.preventDefault, { passive: false });
       window.removeEventListener('keydown', this.preventDefaultForScrollKeys, { passive: false });
     }
 
@@ -1985,29 +1987,73 @@ const mainScript = () => {
             invalidateOnRefresh: true,
           }
         });
+        if (viewport.w >= 992) {
+          this.introTl.to('.home_intro_main', {
+            x: () => -viewport.w * .95,
+            ease: 'none',
+          });
 
-        this.introTl.to('.home_intro_main', {
-          x: () => -viewport.w * .95,
-          ease: 'none',
-        });
+          this.introTl
+            .to('.home_intro_img_list:nth-child(1)', {
+              x: '-=90%',
+              ease: 'none',
+            }, 0)
+            .to('.home_intro_img_list:nth-child(2)', {
+              x: '+=55%',
+              ease: 'none',
+            }, 0)
+            .to('.home_intro_img_list:nth-child(3)', {
+              x: '-=45%',
+              ease: 'none',
+            }, 0)
+            .to('.home_intro_img_list:nth-child(4)', {
+              x: '+=80%',
+              ease: 'none',
+            }, 0);
+        }
+        else if (viewport.w > 767) {
+          this.introTl.to('.home_intro_main', {
+            x: () => -viewport.w * 1.8,
+            ease: 'none',
+          });
 
-        this.introTl
-          .to('.home_intro_img_list:nth-child(1)', {
-            x: '-=90%',
-            ease: 'none',
-          }, 0)
-          .to('.home_intro_img_list:nth-child(2)', {
-            x: '+=55%',
-            ease: 'none',
-          }, 0)
-          .to('.home_intro_img_list:nth-child(3)', {
-            x: '-=45%',
-            ease: 'none',
-          }, 0)
-          .to('.home_intro_img_list:nth-child(4)', {
-            x: '+=80%',
-            ease: 'none',
-          }, 0);
+          this.introTl
+            .to('.home_intro_img_list:nth-child(1)', {
+              x: '-=90%',
+              ease: 'none',
+            }, 0)
+            .to('.home_intro_img_list:nth-child(2)', {
+              x: '+=45%',
+              ease: 'none',
+            }, 0)
+            .to('.home_intro_img_list:nth-child(3)', {
+              x: '-=40%',
+              ease: 'none',
+            }, 0)
+            .to('.home_intro_img_list:nth-child(4)', {
+              x: '+=70%',
+              ease: 'none',
+            }, 0);
+        }
+        else {
+          this.introTl
+            .to('.home_intro_img_list:nth-child(1)', {
+              x: '-=60%',
+              ease: 'none',
+            }, 0)
+            .to('.home_intro_img_list:nth-child(2)', {
+              x: '+=35%',
+              ease: 'none',
+            }, 0)
+            .to('.home_intro_img_list:nth-child(3)', {
+              x: '-=30%',
+              ease: 'none',
+            }, 0)
+            .to('.home_intro_img_list:nth-child(4)', {
+              x: '+=30%',
+              ease: 'none',
+            }, 0);
+        }
 
         // Helper trigger to control exit/entry locking and animation without scrub conflicts
         this.boundaryTrigger = ScrollTrigger.create({
@@ -2042,6 +2088,24 @@ const mainScript = () => {
               this.introTl.scrollTrigger.disable(false);
             }
 
+            let targetX1, targetX2, targetX3, targetX4;
+            if (viewport.w >= 992) {
+              targetX1 = '-30%';
+              targetX2 = '70%';
+              targetX3 = '-20%';
+              targetX4 = '90%';
+            } else if (viewport.w > 767) {
+              targetX1 = '-30%';
+              targetX2 = '45%';
+              targetX3 = '-15%';
+              targetX4 = '80%';
+            } else {
+              targetX1 = '-40%';
+              targetX2 = '35%';
+              targetX3 = '-25%';
+              targetX4 = '35%';
+            }
+
             gsap.timeline({
               onComplete: () => {
                 if (this.introTl && this.introTl.scrollTrigger) {
@@ -2050,10 +2114,10 @@ const mainScript = () => {
                 smoothScroll.start();
               }
             })
-              .to('.home_intro_img_list:nth-child(1)', { x: '-30%', duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0)
-              .to('.home_intro_img_list:nth-child(2)', { x: '70%', duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0)
-              .to('.home_intro_img_list:nth-child(3)', { x: '-20%', duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0)
-              .to('.home_intro_img_list:nth-child(4)', { x: '90%', duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0);
+              .to('.home_intro_img_list:nth-child(1)', { x: targetX1, duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0)
+              .to('.home_intro_img_list:nth-child(2)', { x: targetX2, duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0)
+              .to('.home_intro_img_list:nth-child(3)', { x: targetX3, duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0)
+              .to('.home_intro_img_list:nth-child(4)', { x: targetX4, duration: 1, ease: 'power2.out', overwrite: 'auto' }, 0);
           }
         });
       }
@@ -2518,7 +2582,7 @@ const mainScript = () => {
       onTrigger() {
         this.setup();
         this.animFade();
-        this.animScrub();
+        viewport.w > 767 && this.animScrub();
       }
 
       setup() {
@@ -2626,7 +2690,7 @@ const mainScript = () => {
           scrollTrigger: {
             trigger: this.el,
             start: 'top+=10% top',
-            end: `bottom-=${viewport.h * 3 / 2} bottom`,
+            end: `bottom-=${viewport.h * 2} bottom`,
             scrub: true,
             invalidateOnRefresh: true
           }
@@ -2985,7 +3049,250 @@ const mainScript = () => {
     }
   };
 
-  const AboutUsPage = {};
+  const AboutUsPage = {
+    Hero: class extends TriggerSetup {
+      constructor() {
+        super();
+        this.el = null;
+        this.fadeTl = null;
+        this.master = null;
+        this.imgFade = null;
+        this.txtSplit = null;
+        this.rightFade = null;
+        this.bgFade = null;
+      }
+      trigger(data) {
+        this.el = document.querySelector('.about_hero');
+        if (!this.el) return;
+        super.setTrigger(this.el, this.onTrigger.bind(this));
+      }
+      onTrigger() {
+        this.setup();
+        this.animFade();
+      }
+      setup() {
+        this.img = this.el.querySelector('.about_hero_img');
+        this.txt = this.el.querySelector('.about_hero_content_txt');
+        this.rightNames = this.el.querySelectorAll('.about_hero_content_right_name');
+        this.bg = this.el.querySelector('.about_hero_bg');
+
+        if (this.img) {
+          this.imgFade = new FadeIn({
+            el: this.img,
+            type: 'bottom',
+            from: { scale: 0.95 },
+            to: { scale: 1 },
+            isDisableRevert: true,
+            duration: 1.4,
+            ease: 'power3.out'
+          });
+        }
+        if (this.txt) {
+          this.txtSplit = new FadeSplitText({
+            el: this.txt,
+            splitType: 'words',
+            isDisableRevert: true,
+            duration: 1.2,
+            stagger: 0.01,
+            ease: 'power3.out'
+          });
+        }
+        if (this.rightNames.length > 0) {
+          this.rightFade = new FadeIn({
+            el: this.rightNames,
+            type: 'bottom',
+            stagger: 0.15,
+            isDisableRevert: true,
+            duration: 1.2,
+            ease: 'power3.out'
+          });
+        }
+        if (this.bg) {
+          this.bgFade = new FadeIn({
+            el: this.bg,
+            type: 'none',
+            from: { scale: 0.8 },
+            to: { scale: 1 },
+            isDisableRevert: true,
+            duration: 2.0,
+            ease: 'power2.out'
+          });
+        }
+      }
+      animFade() {
+        this.fadeTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: this.el,
+            start: 'top top+=80%',
+            once: true
+          }
+        });
+
+        const tweenArr = [];
+        if (this.bgFade) tweenArr.push(this.bgFade);
+        if (this.imgFade) tweenArr.push(this.imgFade);
+        if (this.txtSplit) tweenArr.push(this.txtSplit);
+        if (this.rightFade) tweenArr.push(this.rightFade);
+
+        this.master = new MasterTimeline({
+          timeline: this.fadeTl,
+          triggerInit: this.el,
+          tweenArr: tweenArr,
+          stagger: 0.25
+        });
+      }
+      destroy() {
+        super.cleanTrigger();
+        if (this.fadeTl) {
+          this.fadeTl.kill();
+          this.fadeTl = null;
+        }
+        if (this.master) {
+          this.master.destroy();
+          this.master = null;
+        }
+        if (this.imgFade) {
+          this.imgFade.destroy();
+          this.imgFade = null;
+        }
+        if (this.txtSplit) {
+          this.txtSplit.destroy();
+          this.txtSplit = null;
+        }
+        if (this.rightFade) {
+          this.rightFade.destroy();
+          this.rightFade = null;
+        }
+        if (this.bgFade) {
+          this.bgFade.destroy();
+          this.bgFade = null;
+        }
+      }
+    },
+    Impressive: class extends TriggerSetup {
+      constructor() {
+        super();
+        this.el = null;
+        this.fadeTl = null;
+        this.master = null;
+        this.subFade = null;
+        this.imgFade = null;
+        this.titleSplit = null;
+        this.desFade = null;
+        this.listItemsFade = null;
+      }
+      trigger(data) {
+        this.el = document.querySelector('.about_impressive');
+        if (!this.el) return;
+        super.setTrigger(this.el, this.onTrigger.bind(this));
+      }
+      onTrigger() {
+        this.setup();
+        this.animFade();
+      }
+      setup() {
+        this.sub = this.el.querySelector('.about_impressive_left_subtitle');
+        this.img = this.el.querySelector('.about_impressive_left_img');
+        this.title = this.el.querySelector('.about_impressive_right_title');
+        this.des = this.el.querySelector('.about_impressive_right_des');
+        this.items = this.el.querySelectorAll('.about_impressive_right_list_item');
+
+        if (this.sub) {
+          this.subFade = new FadeIn({
+            el: this.sub,
+            type: 'bottom',
+            isDisableRevert: true,
+          });
+        }
+        if (this.img) {
+          this.imgFade = new FadeIn({
+            el: this.img,
+            type: 'left',
+            isDisableRevert: true,
+          });
+        }
+        if (this.title) {
+          this.titleSplit = new FadeSplitText({
+            el: this.title,
+            splitType: 'words',
+            isDisableRevert: true,
+            duration: 1.0,
+            stagger: 0.02,
+          });
+        }
+        if (this.des) {
+          this.desFade = new FadeIn({
+            el: this.des,
+            type: 'bottom',
+            isDisableRevert: true,
+            delay: 0.2,
+          });
+        }
+        if (this.items.length > 0) {
+          this.listItemsFade = new FadeIn({
+            el: this.items,
+            type: 'bottom',
+            stagger: 0.1,
+            isDisableRevert: true,
+          });
+        }
+      }
+      animFade() {
+        this.fadeTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: this.el,
+            start: 'top top+=80%',
+            once: true
+          }
+        });
+
+        const tweenArr = [];
+        if (this.subFade) tweenArr.push(this.subFade);
+        if (this.imgFade) tweenArr.push(this.imgFade);
+        if (this.titleSplit) tweenArr.push(this.titleSplit);
+        if (this.desFade) tweenArr.push(this.desFade);
+        if (this.listItemsFade) tweenArr.push(this.listItemsFade);
+
+        this.master = new MasterTimeline({
+          timeline: this.fadeTl,
+          triggerInit: this.el,
+          tweenArr: tweenArr,
+          stagger: 0.15
+        });
+      }
+      destroy() {
+        super.cleanTrigger();
+        if (this.fadeTl) {
+          this.fadeTl.kill();
+          this.fadeTl = null;
+        }
+        if (this.master) {
+          this.master.destroy();
+          this.master = null;
+        }
+        if (this.subFade) {
+          this.subFade.destroy();
+          this.subFade = null;
+        }
+        if (this.imgFade) {
+          this.imgFade.destroy();
+          this.imgFade = null;
+        }
+        if (this.titleSplit) {
+          this.titleSplit.destroy();
+          this.titleSplit = null;
+        }
+        if (this.desFade) {
+          this.desFade.destroy();
+          this.desFade = null;
+        }
+        if (this.listItemsFade) {
+          this.listItemsFade.destroy();
+          this.listItemsFade = null;
+        }
+      }
+    }
+  };
   const CareerPage = {};
   const CareerDetailPage = {};
   const CaseStudyPage = {};
