@@ -366,11 +366,11 @@ const mainScript = () => {
       this.delay = delay;
       this.options = {
         bottom: {
-          set: { opacity: 0, y: parseRem(32), ...from },
+          set: { opacity: 0, y: parseRem(100), ...from },
           to: { opacity: 1, y: 0, ...to }
         },
         top: {
-          set: { opacity: 0, y: parseRem(-32), ...from },
+          set: { opacity: 0, y: parseRem(-100), ...from },
           to: { opacity: 1, y: 0, ...to }
         },
         left: {
@@ -378,7 +378,7 @@ const mainScript = () => {
           to: { opacity: 1, x: 0, ...to },
         },
         right: {
-          set: { opacity: 0, x: parseRem(-32), ...from },
+          set: { opacity: 0, x: parseRem(100), ...from },
           to: { opacity: 1, x: 0, ...to }
         },
         none: {
@@ -508,28 +508,28 @@ const mainScript = () => {
   }
   class ScaleInset {
     constructor({ el, delay, duration, isDisableRevert, onComplete }) {
-      this.DOM = {
-        el: el
-      };
+      this.DOM = { el: el };
       this.delay = delay;
-      const animationProps = {
+
+      const d = duration || 1.4;
+
+      const tl = gsap.timeline();
+
+      tl.to(el, {
         scale: 1,
-        duration: 1.6,
         autoAlpha: 1,
+        y: 0,
+        duration: d,
         ease: 'expo.out',
         clearProps: isDisableRevert ? '' : 'all',
-        overwrite: true
-      };
-      if (onComplete) {
-        animationProps.onComplete = onComplete;
-      }
-      this.animation = gsap
-        .timeline()
-        .to(this.DOM.el, animationProps)
+      }, 0);
+
+      if (onComplete) tl.eventCallback('onComplete', onComplete);
+      this.animation = tl;
     }
     init() {
       if (!this.DOM.el) return;
-      gsap.set(this.DOM.el, { scale: 1.25, autoAlpha: 0 });
+      gsap.set(this.DOM.el, { scale: 1.08, autoAlpha: 0, y: 24 });
     }
     destroy() {
       this.animation.kill();
@@ -1808,7 +1808,7 @@ const mainScript = () => {
       this.fadeTl = gsap.timeline({
         scrollTrigger: {
           trigger: this.el,
-          start: 'top bottom-=50px',
+          start: 'top top+=75%',
           once: true
         }
       });
@@ -1858,6 +1858,97 @@ const mainScript = () => {
     }
   }
   const footer = new Footer();
+
+  class Cta {
+    constructor() {
+      this.el = null;
+      this.fadeTl = null;
+      this.master = null;
+      this.imgFade = null;
+      this.overlayFade = null;
+      this.contentSplit = null;
+      this.iconFade = null;
+      this.bgDecorTl = null;
+      this.bgDecorMaster = null;
+      this.bgTopFade = null;
+      this.bgBotFade = null;
+      this.bgRedFade = null;
+    }
+    init(data) {
+      this.el = document.querySelector('.about_cta');
+      if (!this.el) return;
+      this.setup();
+      this.animFade();
+      this.animBgDecorators();
+    }
+    setup() {
+      this.img = this.el.querySelector('.about_cta_img');
+      this.content = this.el.querySelector('.about_cta_inner_content');
+      this.icon = this.el.querySelector('.about_cta_inner_content_icon');
+      this.bgTop = this.el.querySelector('.about_cta_bg_top');
+      this.bgBot = this.el.querySelector('.about_cta_bg_bot');
+      this.bgRed = this.el.querySelector('.about_cta_bg_red');
+
+      if (this.img) {
+        this.imgFade = new FadeIn({ el: this.img, type: 'none', isDisableRevert: true, duration: 1.4 });
+      }
+      if (this.content) {
+        this.contentSplit = new FadeIn({ el: this.content, type: 'bottom', isDisableRevert: true, duration: 1.0 });
+      }
+      if (this.icon) {
+        this.iconFade = new FadeIn({ el: this.icon, type: 'bottom', isDisableRevert: true, duration: 0.8 });
+      }
+      if (this.bgTop) {
+        this.bgTopFade = new FadeIn({ el: this.bgTop, type: 'top', isDisableRevert: true, duration: 1.0, ease: 'power2.out' });
+      }
+      if (this.bgBot) {
+        this.bgBotFade = new FadeIn({ el: this.bgBot, type: 'bottom', isDisableRevert: true, duration: 1.0, ease: 'power2.out' });
+      }
+      if (this.bgRed) {
+        this.bgRedFade = new FadeIn({ el: this.bgRed, type: 'left', isDisableRevert: true, duration: 1.0, ease: 'power2.out' });
+      }
+    }
+
+    animFade() {
+      this.fadeTl = gsap.timeline({
+        scrollTrigger: { trigger: this.el, start: 'top top+=70%', once: true }
+      });
+      const tweenArr = [];
+      if (this.imgFade) tweenArr.push(this.imgFade);
+      if (this.contentSplit) tweenArr.push(this.contentSplit);
+      if (this.iconFade) tweenArr.push(this.iconFade);
+      this.master = new MasterTimeline({ timeline: this.fadeTl, triggerInit: this.el, tweenArr, stagger: 0.2 });
+    }
+    animBgDecorators() {
+      const tweenArr = [];
+      if (this.bgTopFade) tweenArr.push(this.bgTopFade);
+      if (this.bgBotFade) tweenArr.push(this.bgBotFade);
+      if (this.bgRedFade) tweenArr.push(this.bgRedFade);
+      if (!tweenArr.length) return;
+
+      const trigger = this.bgRed || this.bgTop || this.el;
+      this.bgDecorTl = gsap.timeline({
+        scrollTrigger: { trigger, start: 'top top+=80%', toggleActions: 'play reverse play reverse' }
+      });
+      this.bgDecorMaster = new MasterTimeline({
+        timeline: this.bgDecorTl,
+        triggerInit: trigger,
+        tweenArr,
+        stagger: 0
+      });
+    }
+    destroy() {
+      if (this.fadeTl) { this.fadeTl.kill(); this.fadeTl = null; }
+      if (this.master) { this.master.destroy(); this.master = null; }
+      if (this.bgDecorTl) { this.bgDecorTl.kill(); this.bgDecorTl = null; }
+      if (this.bgDecorMaster) { this.bgDecorMaster.destroy(); this.bgDecorMaster = null; }
+      [this.imgFade, this.contentSplit, this.iconFade, this.bgTopFade, this.bgBotFade, this.bgRedFade]
+        .forEach(a => a?.destroy?.());
+      this.fadeTl = this.master = this.bgDecorTl = this.bgDecorMaster = null;
+      this.imgFade = this.contentSplit = this.iconFade = this.bgTopFade = this.bgBotFade = this.bgRedFade = null;
+    }
+  }
+  const cta = new Cta();
 
   class ButtonTop {
     constructor() {
@@ -3050,9 +3141,8 @@ const mainScript = () => {
   };
 
   const AboutUsPage = {
-    Hero: class extends TriggerSetup {
+    Hero: class {
       constructor() {
-        super();
         this.el = null;
         this.fadeTl = null;
         this.master = null;
@@ -3064,9 +3154,6 @@ const mainScript = () => {
       trigger(data) {
         this.el = document.querySelector('.about_hero');
         if (!this.el) return;
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
         this.setup();
         this.animFade();
       }
@@ -3120,13 +3207,7 @@ const mainScript = () => {
         }
       }
       animFade() {
-        this.fadeTl = gsap.timeline({
-          scrollTrigger: {
-            trigger: this.el,
-            start: 'top top+=80%',
-            once: true
-          }
-        });
+        this.fadeTl = gsap.timeline();
 
         const tweenArr = [];
         if (this.bgFade) tweenArr.push(this.bgFade);
@@ -3142,7 +3223,6 @@ const mainScript = () => {
         });
       }
       destroy() {
-        super.cleanTrigger();
         if (this.fadeTl) {
           this.fadeTl.kill();
           this.fadeTl = null;
@@ -3296,6 +3376,353 @@ const mainScript = () => {
           this.listItemsFade.destroy();
           this.listItemsFade = null;
         }
+      }
+    },
+    Best: class extends TriggerSetup {
+      constructor() {
+        super();
+        this.el = null;
+        this.fadeTl = null;
+        this.master = null;
+        this.subFade = null;
+        this.titleSplit = null;
+        this.leftFade = null;
+        this.desFade = null;
+        this.capFade = null;
+      }
+      trigger(data) {
+        this.el = document.querySelector('.about_best');
+        if (!this.el) return;
+        super.setTrigger(this.el, this.onTrigger.bind(this));
+      }
+      onTrigger() {
+        this.setup();
+        this.animFade();
+      }
+      setup() {
+        this.sub = this.el.querySelector('.about_best_subtitle');
+        this.title = this.el.querySelector('.about_best_title');
+        this.left = this.el.querySelector('.about_best_left');
+        this.des = this.el.querySelector('.about_best_right_des');
+        this.cap = this.el.querySelector('.about_best_right_cap');
+
+        if (this.sub) {
+          this.subFade = new FadeIn({
+            el: this.sub,
+            type: 'bottom',
+            isDisableRevert: true,
+          });
+        }
+        if (this.title) {
+          this.titleSplit = new FadeSplitText({
+            el: this.title,
+            splitType: 'words',
+            isDisableRevert: true,
+            duration: 1.0,
+            stagger: 0.02,
+          });
+        }
+        if (this.left) {
+          this.leftFade = new FadeIn({
+            el: this.left,
+            type: 'left',
+            isDisableRevert: true,
+            duration: 1.2,
+            ease: 'power2.out'
+          });
+        }
+        if (this.des) {
+          this.desFade = new FadeSplitText({
+            el: this.des,
+            splitType: 'words',
+            isDisableRevert: true,
+            duration: 1.0,
+            stagger: 0.015,
+          });
+        }
+        if (this.cap) {
+          this.capFade = new FadeIn({
+            el: this.cap,
+            type: 'bottom',
+            isDisableRevert: true,
+            duration: 0.8,
+          });
+        }
+      }
+      animFade() {
+        this.fadeTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: this.el,
+            start: 'top top+=70%',
+            once: true
+          }
+        });
+
+        const tweenArr = [];
+        if (this.subFade) tweenArr.push(this.subFade);
+        if (this.titleSplit) tweenArr.push(this.titleSplit);
+        if (this.leftFade) tweenArr.push(this.leftFade);
+        if (this.desFade) tweenArr.push(this.desFade);
+        if (this.capFade) tweenArr.push(this.capFade);
+
+        this.master = new MasterTimeline({
+          timeline: this.fadeTl,
+          triggerInit: this.el,
+          tweenArr: tweenArr,
+          stagger: 0.3
+        });
+      }
+      destroy() {
+        super.cleanTrigger();
+        if (this.fadeTl) {
+          this.fadeTl.kill();
+          this.fadeTl = null;
+        }
+        if (this.master) {
+          this.master.destroy();
+          this.master = null;
+        }
+        if (this.subFade) {
+          this.subFade.destroy();
+          this.subFade = null;
+        }
+        if (this.titleSplit) {
+          this.titleSplit.destroy();
+          this.titleSplit = null;
+        }
+        if (this.leftFade) {
+          this.leftFade.destroy();
+          this.leftFade = null;
+        }
+        if (this.desFade) {
+          this.desFade.destroy();
+          this.desFade = null;
+        }
+        if (this.capFade) {
+          this.capFade.destroy();
+          this.capFade = null;
+        }
+      }
+    },
+    Team: class extends TriggerSetup {
+      constructor() {
+        super();
+        this.el = null;
+        // header group
+        this.headerTl = null;
+        this.headerMaster = null;
+        this.subFade = null;
+        this.titleSplit = null;
+        this.desFade = null;
+        // items
+        this.itemTls = [];
+        this.itemMasters = [];
+        // card
+        this.cardTl = null;
+        this.cardMaster = null;
+        this.cardImgFade = null;
+        this.cardContentFade = null;
+        this.cardTitleSplit = null;
+        this.cardDesFade = null;
+        this.cardBotFade = null;
+        // bg decorators
+        this.bgTl = null;
+        this.bgMaster = null;
+        this.bgRightTl = null;
+        this.bgRightMaster = null;
+        this.bgLeftFade = null;
+        this.bgRightFade = null;
+      }
+      trigger(data) {
+        this.el = document.querySelector('.about_team');
+        if (!this.el) return;
+        super.setTrigger(this.el, this.onTrigger.bind(this));
+      }
+      onTrigger() {
+        this.setup();
+        this.animHeader();
+        this.animItems();
+        this.animCard();
+        this.animBg();
+      }
+      setup() {
+        this.sub = this.el.querySelector('.about_team_subtitle');
+        this.title = this.el.querySelector('.about_team_title');
+        this.des = this.el.querySelector('.about_team_des');
+        this.items = Array.from(this.el.querySelectorAll('.about_team_content_item'));
+        this.card = this.el.querySelector('.about_team_card');
+        this.bgLeft = this.el.querySelector('.about_team_content_bgleft');
+        this.bgRight = this.el.querySelector('.about_team_content_bgright');
+
+        // ── header group ──
+        if (this.sub) {
+          this.subFade = new FadeIn({ el: this.sub, type: 'bottom', isDisableRevert: true });
+        }
+        if (this.title) {
+          this.titleSplit = new FadeSplitText({
+            el: this.title,
+            splitType: 'words',
+            isDisableRevert: true,
+            duration: 1.0,
+            stagger: 0.02,
+          });
+        }
+        if (this.des) {
+          this.desFade = new FadeSplitText({
+            el: this.des,
+            splitType: 'words',
+            isDisableRevert: true,
+            duration: 1.0,
+            stagger: 0.015,
+          });
+        }
+
+        // ── card ──
+        const cardImg = this.card?.querySelector('.about_team_card_img');
+        const cardContent = this.card?.querySelector('.about_team_card_item_content');
+        // img và content là siblings → không có parent-child opacity conflict
+        if (cardImg) {
+          this.cardImgFade = new ScaleInset({ el: cardImg, isDisableRevert: true });
+        }
+        if (cardContent) {
+          this.cardContentFade = new FadeIn({ el: cardContent, type: 'bottom', isDisableRevert: true, duration: 0.8 });
+          this.cardTitleSplit = new FadeSplitText({
+            el: cardContent.querySelector('.about_team_card_item_content_title'),
+            splitType: 'words',
+            isDisableRevert: true,
+            duration: 0.9,
+            stagger: 0.02,
+          });
+          this.cardDesFade = new FadeSplitText({
+            el: cardContent.querySelector('.about_team_card_item_content_des'),
+            splitType: 'words',
+            isDisableRevert: true,
+            duration: 0.9,
+            stagger: 0.01,
+          });
+          this.cardBotFade = new FadeIn({ el: cardContent.querySelector('.about_team_card_item_content_bot'), type: 'bottom', isDisableRevert: true, duration: 0.8 });
+        }
+
+        // ── bg decorators ──
+        if (this.bgLeft) {
+          this.bgLeftFade = new FadeIn({ el: this.bgLeft, type: 'left', isDisableRevert: true, duration: 1.2, ease: 'power2.out' });
+        }
+        if (this.bgRight) {
+          this.bgRightFade = new FadeIn({ el: this.bgRight, type: 'right', isDisableRevert: true, duration: 1.2, ease: 'power2.out' });
+        }
+      }
+      animHeader() {
+        this.headerTl = gsap.timeline({
+          scrollTrigger: { trigger: this.sub || this.title || this.des, start: 'top top+=70%', once: true }
+        });
+        const tweenArr = [];
+        if (this.subFade) tweenArr.push(this.subFade);
+        if (this.titleSplit) tweenArr.push(this.titleSplit);
+        if (this.desFade) tweenArr.push(this.desFade);
+        this.headerMaster = new MasterTimeline({
+          timeline: this.headerTl,
+          triggerInit: this.sub || this.title || this.des,
+          tweenArr,
+          stagger: 0.3
+        });
+      }
+      animItems() {
+        this.items.forEach((item) => {
+          const itemFade = new FadeIn({ el: item, type: 'bottom', isDisableRevert: true, duration: 0.8 });
+          const iconFade = new FadeIn({ el: item.querySelector('.about_team_content_item_icon'), type: 'bottom', isDisableRevert: true, duration: 0.8 });
+          const titleFade = new FadeSplitText({
+            el: item.querySelector('.about_team_content_item_title'),
+            splitType: 'words',
+            isDisableRevert: true,
+            duration: 0.8,
+            stagger: 0.02,
+          });
+          const desFade = new FadeSplitText({
+            el: item.querySelector('.about_team_content_item_des'),
+            splitType: 'words',
+            isDisableRevert: true,
+            duration: 0.8,
+            stagger: 0.01,
+          });
+
+          const tl = gsap.timeline({
+            scrollTrigger: { trigger: item, start: 'top top+=75%', once: true }
+          });
+          const tweenArr = [];
+          if (iconFade.DOM?.el) tweenArr.push(iconFade);
+          if (titleFade.DOM?.el) tweenArr.push(titleFade);
+          if (desFade.DOM?.el) tweenArr.push(desFade);
+          if (itemFade.DOM?.el) tweenArr.push(itemFade);
+
+          const master = new MasterTimeline({ timeline: tl, triggerInit: item, tweenArr, stagger: 0.2 });
+          this.itemTls.push(tl);
+          this.itemMasters.push(master);
+        });
+      }
+      animCard() {
+        if (!this.card) return;
+        this.cardTl = gsap.timeline({
+          scrollTrigger: { trigger: this.card, start: 'top top+=70%', once: true }
+        });
+        // img (ScaleInset) + content block (FadeIn) chạy song song — là siblings, không conflict
+        // Sau khi content block fade in xong mới chạy các phần tử bên trong
+        const tweenArr = [];
+        if (this.cardImgFade) tweenArr.push(this.cardImgFade);
+        if (this.cardContentFade) tweenArr.push(this.cardContentFade);
+        if (this.cardTitleSplit) tweenArr.push(this.cardTitleSplit);
+        if (this.cardDesFade) tweenArr.push(this.cardDesFade);
+        if (this.cardBotFade) tweenArr.push(this.cardBotFade);
+        this.cardMaster = new MasterTimeline({
+          timeline: this.cardTl,
+          triggerInit: this.card,
+          tweenArr,
+          stagger: 0.25
+        });
+      }
+      animBg() {
+        if (this.bgLeft && this.bgLeftFade) {
+          this.bgTl = gsap.timeline({
+            scrollTrigger: {
+              trigger: this.bgLeft,
+              start: 'top top+=50%',
+              toggleActions: 'play reverse play reverse'
+            }
+          });
+          this.bgMaster = new MasterTimeline({
+            timeline: this.bgTl,
+            triggerInit: this.bgLeft,
+            tweenArr: [this.bgLeftFade],
+            stagger: 0
+          });
+        }
+        if (this.bgRight && this.bgRightFade) {
+          this.bgRightTl = gsap.timeline({
+            scrollTrigger: {
+              trigger: this.bgRight,
+              start: 'top top+=50%',
+              toggleActions: 'play reverse play reverse'
+            }
+          });
+          this.bgRightMaster = new MasterTimeline({
+            timeline: this.bgRightTl,
+            triggerInit: this.bgRight,
+            tweenArr: [this.bgRightFade],
+            stagger: 0
+          });
+        }
+      }
+
+      destroy() {
+        super.cleanTrigger();
+        [this.headerTl, this.cardTl, this.bgTl, this.bgRightTl, ...this.itemTls].forEach(tl => tl?.kill());
+        [this.headerMaster, this.cardMaster, this.bgMaster, this.bgRightMaster, ...this.itemMasters].forEach(m => m?.destroy());
+        [this.subFade, this.titleSplit, this.desFade, this.cardImgFade, this.cardContentFade, this.cardTitleSplit, this.cardDesFade, this.cardBotFade, this.bgLeftFade, this.bgRightFade]
+          .forEach(a => a?.destroy?.());
+        this.headerTl = this.cardTl = this.bgTl = this.bgRightTl = null;
+        this.headerMaster = this.cardMaster = this.bgMaster = this.bgRightMaster = null;
+        this.subFade = this.titleSplit = this.desFade = this.cardImgFade = this.cardContentFade = this.cardTitleSplit = this.cardDesFade = this.cardBotFade = this.bgLeftFade = this.bgRightFade = null;
+        this.itemTls = [];
+        this.itemMasters = [];
       }
     }
   };
@@ -3474,6 +3901,7 @@ const mainScript = () => {
     resetScroll(data);
     header.init(data);
     footer.init(data);
+    cta.init(data);
     buttonTop.init();
   });
 };

@@ -1194,6 +1194,7 @@ h2 {
 /* about_cta */
 .about_cta {
     position: relative;
+    overflow: hidden;
 }
 
 .about_cta_img {
@@ -1204,13 +1205,34 @@ h2 {
 
 .about_cta_inner_bg {
     position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
+    inset: 0;
     z-index: 1;
-    /* fill: radial-gradient(57.46% 70.71% at 100% 50%, rgba(230, 38, 54, 0.70) 0%, rgba(230, 38, 54, 0.05) 50.47%);
-    box-shadow: 0 -10px 10px 0 rgba(255, 241, 242, 0.20) inset, 0 1px 0 0 rgba(255, 255, 255, 0.05) inset, 0 2px 6px 0 rgba(255, 255, 255, 0.05) inset;
-    backdrop-filter: blur(2rem); */
+    pointer-events: none;
+    width: 25rem;
+}
+
+.about_cta_bg_red {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10rem;
+}
+
+.about_cta_bg_top {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+}
+
+.about_cta_bg_bot {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: auto;
 }
 
 .about_cta_inner_overlay {
