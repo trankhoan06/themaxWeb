@@ -3731,7 +3731,9 @@ const mainScript = () => {
   const CaseStudyPage = {};
   const CaseStudyDetailPage = {};
   const ContactPage = {};
-  const ServicePage = {};
+  const ServicePage = {
+    Services: HomePage.Services
+  };
 
   class PageManager {
     constructor(page) {
